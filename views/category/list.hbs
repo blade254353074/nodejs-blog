@@ -1,0 +1,8 @@
+<h1>{{title}}</h1>
+{{> header}}
+<ul>
+    {{#each categories}}
+    <li><a href="/categories/{{name_raw}}">{{name}}</a></li>
+    {{/each}}
+</ul>
+{{> footer}}

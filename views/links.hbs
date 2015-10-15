@@ -1,0 +1,15 @@
+<h1>{{title}}</h1>
+{{> header}}
+<blockquote>
+    {{#each links}}
+        <a href="{{link}}" target="_blank">{{name}}</a>
+    {{else}}
+        <p>暂时还没有友情链接，</p>
+    {{/each}}
+</blockquote>
+<address>
+    <strong>交换链接，请联系我</strong>
+    <a  href="mailto:blade254353074@hotmail.com"
+        title="发送邮件">blade254353074@hotmail.com</a>
+</address>
+{{> footer}}

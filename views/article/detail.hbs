@@ -1,0 +1,58 @@
+<h1>{{title}}</h1>
+{{> header}}
+<div class="meta">
+    <span>作者：{{author}}</span>
+    <time data-release="{{#timeFormatter create_date}}{{/timeFormatter}}">
+        最后更新：{{#timeFormatter update_date}}{{/timeFormatter}}
+    </time>
+    <span>分类：
+        {{#each category}}
+        <a href="/categories/{{name_raw}}" title="{{name}}">{{name}}</a>
+        {{/each}}
+    </span>
+    <span>喜欢：{{like}}</span>
+    <span>浏览：{{#if visit}} {{visit}} {{else}} 0 {{/if}}</span>
+</div>
+<div class="content">{{{content}}}</div>
+<div>
+    <button data-id="{{_id}}" id="like">like</button>
+    <button data-id="{{_id}}" id="dislike">dislike</button>
+</div>
+{{> footer}}
+<script src="/javascripts/jquery.js"></script>
+<script>
+$(function() {
+    var $ajax;
+    $('#like').on('click', function(evt) {
+        var id = this.getAttribute('data-id');
+
+        if ($ajax) {
+            $ajax.abort();
+        }
+        $ajax = $.ajax({
+            url: '/articles/' + id + '/like',
+            type: 'PUT',
+            data: {value: 'like'}
+        }).complete(function() {
+            $ajax = undefined;
+        });
+
+    });
+
+    $('#dislike').on('click', function(evt) {
+        var id = this.getAttribute('data-id');
+
+        if ($ajax) {
+            $ajax.abort();
+        }
+        $ajax = $.ajax({
+            url: '/articles/' + id + '/like',
+            type: 'PUT',
+            data: {value: 'dislike'}
+        }).complete(function() {
+            $ajax = undefined;
+        });
+
+    });
+});
+</script>

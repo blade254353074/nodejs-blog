@@ -1,0 +1,17 @@
+<h1>{{title}}</h1>
+{{> header}}
+<ul>
+    {{#each articles}}
+    <li>
+        <a href="/articles/{{_id}}" class="title">{{title}}</a>
+        <div class="meta">
+            <time title="{{#timeFormatter update_date}}{{/timeFormatter}}">
+                最后更新：{{#dateDiff update_date}}{{/dateDiff}}
+            </time>
+        </div>
+    </li>
+    {{/each}}
+</ul>
+{{#paging total page '/articles/posts/'}}{{/paging}}
+{{> footer}}
+<script src="/javascripts/jquery.js"></script>
