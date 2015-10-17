@@ -14,6 +14,7 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.on('open', function(callback) {
     console.log('数据库连接成功');
 
+    // 读取博客站点配置
     var Config = require('../models/config').Config;
     var meta_dynamic = '',
         meta_static = '';

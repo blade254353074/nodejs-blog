@@ -1,4 +1,5 @@
 module.exports.authorize = function(req, res, next) {
+    console.log(req.session.user_id);
     if (!req.session.user_id) {
         if (req.headers['x-requested-with'] === 'XMLHttpRequest') {
             // 如果是 ajax 请求 则返回401

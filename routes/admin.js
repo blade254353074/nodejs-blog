@@ -33,8 +33,13 @@ router.get('/logout', function(req, res, next) {
 });
 
 // 管理界面
+router.get('/', authorize, function(req, res, next) {
+
+    res.render('./admin/index');
+});
+// 管理界面
 router.get('/:action', authorize, function(req, res, next) {
-    if ()
+
     res.render('./admin/index');
 });
 
