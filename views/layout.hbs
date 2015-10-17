@@ -7,19 +7,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="renderer" content="webkit">
     <meta http-equiv="Cache-Control" content="no-siteapp">
-    <meta name="author" content="Sebastian Blade">
-    <meta name="email" content="blade254353074@hotmail">
-    {{#with description}}
-        <meta name="description" content="{{this}}">
-    {{else}}
-        <meta name="description" content="Nodejs Bootstrap">
-    {{/with}}
-    {{#with keywords}}
-        <meta name="keywords" content="{{this}}">
-    {{else}}
-        <meta name="keywords" content="Nodejs, Express, Mongoose, HTML, CSS, JS, JavaScript, MongoDB, Web">
-    {{/with}}
-    <link rel='stylesheet' href='/stylesheets/style.css'>
+    {{#meta_static}}{{/meta_static}}
+    {{#meta_dynamic meta}}{{/meta_dynamic}}
+    <link rel="stylesheet" href="/stylesheets/style.css">
   </head>
   <body>
     {{{body}}}

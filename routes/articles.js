@@ -52,6 +52,8 @@ router.get('/posts/:page', function(req, res, next) {
 
 // 文章详情
 router.get('/:id', function(req, res, next) {
+    var articleUrl = req.headers.host + req.originalUrl;
+
     Article.findById(req.params.id)
         .populate({
             path: 'category',
@@ -61,18 +63,26 @@ router.get('/:id', function(req, res, next) {
                 name_raw: 1
             }
         })
-        .exec(function(err, doc) {
+        .exec(function(err, article) {
             if (err) {
-                return console.log(err);
+                res.render('./article/detail');
+                return console.error(err.message);
             }
-            res.render('./article/detail', doc);
-            if (doc.visit) {
-                doc.visit++;
+            res.render('./article/detail', {
+                title: article.title,
+                article: article,
+                meta: {
+                    description: article.description,
+                    keywords: article.keywords
+                }
+            });
+            if (article.visit) {
+                article.visit++;
             } else {
-                doc.visit = 1;
+                article.visit = 1;
             }
             // 访问量 + 1
-            doc.save(function(err, doc) {
+            article.save(function(err, article) {
                 if (err) return console.error(err);
             });
         });
