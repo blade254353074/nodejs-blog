@@ -1,6 +1,6 @@
 var express = require('express'),
     router = express.Router(),
-    bcrypt = require('bcrypt');
+    crypto = require('crypto');
 
 var Admin = require('../models/admin/user').Admin;
 
@@ -13,12 +13,19 @@ router.post('/login', function(req, res, next) {
     Admin.findOne({
         username: req.headers.username
     }, function(err, user) {
-        // 用bcrypt比较密码
-        if (bcrypt.compareSync(req.headers.password, user.password)) {
-            req.session.user_id = user._id
-            res.json({
-                state: true
-            });
+        var shasum;
+        // 有此用户
+        if (user) {
+            // 用crypto sha1加密比较密码
+            shasum = crypto.createHash('sha1');
+            shasum.update(req.headers.password);
+            if (shasum.digest('hex') === user.password) {
+                // 验证通过，添加_id到session
+                req.session.user_id = user._id
+                res.json({
+                    state: true
+                });
+            }
         } else {
             res.json({
                 state: false
