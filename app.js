@@ -28,11 +28,11 @@ app.use(bodyParser.urlencoded({
 
 app.use(cookieParser());
 app.use(session({
-  secret: '8562',
-  name: 'sessionid',
-  cookie: {},   // 默认 cookie.maxAge 为 null, 即不过期
-  resave: false,
-  saveUninitialized: true
+    secret: '8562',
+    name: 'SESSIONID',
+    cookie: {},   // 默认 cookie.maxAge 为 null, 即不过期
+    resave: false,
+    saveUninitialized: true
 }));
 
 app.use(require('node-compass')({

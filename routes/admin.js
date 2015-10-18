@@ -1,7 +1,7 @@
 var express = require('express'),
     router = express.Router(),
-    md5 = require('md5')
-var authorize = require('../utils/filter').authorize;
+    bcrypt = require('bcrypt');
+
 var Admin = require('../models/admin/user').Admin;
 
 // 登录界面
@@ -11,10 +11,10 @@ router.get('/login', function(req, res, next) {
 
 router.post('/login', function(req, res, next) {
     Admin.findOne({
-        username: req.headers.username,
-        password: md5(req.headers.password)
+        username: req.headers.username
     }, function(err, user) {
-        if (user) {
+        // 用bcrypt比较密码
+        if (bcrypt.compareSync(req.headers.password, user.password)) {
             req.session.user_id = user._id
             res.json({
                 state: true
@@ -22,24 +22,34 @@ router.post('/login', function(req, res, next) {
         } else {
             res.json({
                 state: false
-            })
+            });
         }
     });
 });
 
 // 退出界面
 router.get('/logout', function(req, res, next) {
+    req.session.user_id && (req.session.user_id = undefined);
     res.redirect('/admin/login');
 });
 
-// 管理界面
-router.get('/', authorize, function(req, res, next) {
-
-    res.render('./admin/index');
+// 拦截所有/admin路径的请求
+router.get(/.*/, function(req, res, next) {
+    if (!req.session.user_id) {
+        if (req.headers['x-requested-with'] === 'XMLHttpRequest') {
+            // 如果是 ajax 请求 则返回401
+            res.status(401).send();
+        } else {
+            // 普通整页请求直接重定向
+            res.redirect('/admin/login');
+        }
+    } else {
+        next();
+    }
 });
-// 管理界面
-router.get('/:action', authorize, function(req, res, next) {
 
+// 管理界面
+router.get('/', function(req, res, next) {
     res.render('./admin/index');
 });
 
