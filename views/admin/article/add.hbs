@@ -1,0 +1,79 @@
+{{> admin_nav}}
+<h1>{{title}}</h1>
+<form id="form" action="/admin/articles" method="POST">
+    <div class="form-group">
+        <label for="form_title">标题：</label>
+        <input id="form_title" class="form-control data-upload" name="title" type="text">
+    </div>
+    <div class="form-group">
+        <label for="form_author">作者：</label>
+        <input id="form_author" class="form-control data-upload" name="author" type="text" value="Sebastian Blade">
+    </div>
+    <div class="form-group">
+        <label for="form_category">所属分类：</label>
+        <select id="form_category" class="form-control data-upload" name="category" multiple>
+            {{#each categories}}
+            <option value="{{_id}}">{{name}}</option>
+            {{/each}}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="form_description">描述：</label>
+        <textarea data-optional="true" id="form_description" class="form-control data-upload" name="description" placeholder="可选" maxlength="300"></textarea>
+    </div>
+    <div class="form-group">
+        <label for="form_content_raw">内容：</label>
+        <textarea id="form_content_raw" class="form-control data-upload" name="content_raw"></textarea>
+    </div>
+    <div class="form-group">
+        <label for="form_keywords">关键词：</label>
+        <input id="form_keywords" class="form-control data-upload" name="keywords" type="text" placeholder="关键词用逗号隔开">
+    </div>
+    <div class="form-group">
+        <input id="submit" type="submit" value="提交">
+    </div>
+</form>
+
+<script src="/javascripts/jquery.js"></script>
+<script>
+$(function() {
+    var $form = $('#form');
+    var $uplaadElems = $('.data-upload');
+
+    $('#submit').on('click', function(event) {
+        event.preventDefault();
+        var dataObj = {},
+            dataBool = true;
+
+        $uplaadElems.each(function(index, elem) {
+            var $elem = $(elem),
+                value = $elem.val();
+            if (!value && !$elem.data('optional')) {
+                return dataBool = false;
+            }
+            dataObj[$elem.attr('name')] = value;
+        });
+        if (!dataBool) {
+            return console.log('请填写完整');
+        }
+        console.log(dataObj);
+        $.ajax({
+            url: '/admin/articles',
+            type: 'POST',
+            dataType: 'json',
+            data: dataObj
+        })
+        .done(function(data) {
+            if (!data.state) {
+                return console.log('添加失败，表单填写或许有误');
+            }
+            alert('添加成功');
+            // window.location.reload();
+        })
+        .fail(function(jqXHR, textStatus, errorThrown) {
+
+        });
+
+    });
+});
+</script>

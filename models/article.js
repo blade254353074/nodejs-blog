@@ -14,8 +14,14 @@ var articleSchema = new Schema({
     update_date: Date,
     content_raw: String,
     content: String,
-    like: Number,
-    visit: Number
+    like: {
+        type: Number,
+        default: 0
+    },
+    visit: {
+        type: Number,
+        default: 0
+    }
 }, {
     collection: 'article'
 });

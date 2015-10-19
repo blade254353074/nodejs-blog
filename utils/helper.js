@@ -24,19 +24,20 @@ hbs.registerHelper('timeFormatter', function(date, format) {
     date = new Date(date);
     if (!date instanceof Date) return;
     var dict = {
-        "yyyy": date.getFullYear(),
-        "M": date.getMonth() + 1,
-        "d": date.getDate(),
-        "H": date.getHours(),
-        "m": date.getMinutes(),
-        "s": date.getSeconds(),
-        "MM": ("" + (date.getMonth() + 101)).substr(1),
-        "dd": ("" + (date.getDate() + 100)).substr(1),
-        "HH": ("" + (date.getHours() + 100)).substr(1),
-        "mm": ("" + (date.getMinutes() + 100)).substr(1),
-        "ss": ("" + (date.getSeconds() + 100)).substr(1)
+        'yyyy': date.getFullYear(),
+        'yy': date.getFullYear().toString().slice(-2),
+        'M': date.getMonth() + 1,
+        'd': date.getDate(),
+        'H': date.getHours(),
+        'm': date.getMinutes(),
+        's': date.getSeconds(),
+        'MM': ('' + (date.getMonth() + 101)).substr(1),
+        'dd': ('' + (date.getDate() + 100)).substr(1),
+        'HH': ('' + (date.getHours() + 100)).substr(1),
+        'mm': ('' + (date.getMinutes() + 100)).substr(1),
+        'ss': ('' + (date.getSeconds() + 100)).substr(1)
     };
-    return format.replace(/(yyyy|MM?|dd?|HH?|ss?|mm?)/g, function() {
+    return format.replace(/(yyyy|yy?|MM?|dd?|HH?|ss?|mm?)/g, function() {
         return dict[arguments[0]];
     });
 });
@@ -63,13 +64,13 @@ hbs.registerHelper('dateDiff', function(hisTime, nowTime) {
         _hour = diffValue / hour,
         _min = diffValue / minute;
 
-    if (_year >= 1) result = parseInt(_year) + "年前";
-    else if (_month >= 1) result = parseInt(_month) + "个月前";
-    else if (_week >= 1) result = parseInt(_week) + "周前";
-    else if (_day >= 1) result = parseInt(_day) + "天前";
-    else if (_hour >= 1) result = parseInt(_hour) + "个小时前";
-    else if (_min >= 1) result = parseInt(_min) + "分钟前";
-    else result = "刚刚";
+    if (_year >= 1) result = parseInt(_year) + '年前';
+    else if (_month >= 1) result = parseInt(_month) + '个月前';
+    else if (_week >= 1) result = parseInt(_week) + '周前';
+    else if (_day >= 1) result = parseInt(_day) + '天前';
+    else if (_hour >= 1) result = parseInt(_hour) + '个小时前';
+    else if (_min >= 1) result = parseInt(_min) + '分钟前';
+    else result = '刚刚';
     return result;
 });
 

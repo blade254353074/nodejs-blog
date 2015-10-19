@@ -5,7 +5,8 @@ var categorySchema = new Schema({
     name_raw: String,
     name: String,
     weight: Number,
-    create_at: Date
+    create_at: Date,
+    selected: Boolean
 }, {
     collection: 'category'
 });

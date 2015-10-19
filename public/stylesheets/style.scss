@@ -13,6 +13,14 @@ a[target="_blank"] {
     cursor: alias;
 }
 
+.single-line {
+    max-width: 140px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .sr-only {
     position: absolute;
     width: 1px;
