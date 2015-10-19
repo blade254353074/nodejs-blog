@@ -78,7 +78,7 @@ $(function() {
         })
         .done(function(data) {
             if (!data.state) {
-                return console.log('修改失败，表单填写或许有误');
+                return alert('修改失败，表单填写或许有误');
             }
             alert('修改成功');
             // window.location.reload();

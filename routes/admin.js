@@ -273,32 +273,36 @@ router.get('/articles/:id', function(req, res, next) {
 
 // 修改文章 Update
 router.put('/articles/:id', function(req, res, next) {
-    Article.findById(req.params.id, function(err, article) {
+    var markdown = require("markdown").markdown;
+    var newArticle = req.body;
+
+    newArticle.update_date = new Date();
+    try {
+        newArticle['content'] = markdown.toHTML(newArticle.content_raw);
+    } catch (err) {
+        console.error(newArticle + '\n' + err);
+        return res.json({
+            state: false
+        });
+    }
+    // 更新数据修改成功
+    Article.findOneAndUpdate({
+        _id: req.params.id
+    }, {
+        $set: newArticle
+    }, {
+        upsert: true
+    }, function(err, raw) {
         if (err) {
-            // 未找到此id文章
             console.error(err.message);
             return res.json({
                 state: false
             });
         }
-        article.update({
-                $set: req.body,
-                $set: {
-                    update_date: new Date()
-                }
-            })
-            .exec(function(err, raw) {
-                if (err) {
-                    console.error(err.message);
-                    return res.json({
-                        state: false
-                    });
-                }
-                // 更新成功
-                res.json({
-                    state: true
-                });
-            });
+        // 更新成功
+        res.json({
+            state: true
+        });
     });
 });
 
