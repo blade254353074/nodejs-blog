@@ -54,7 +54,7 @@ app.use(methodOverride(function(req, res) {
 app.use('/', require('./routes/index'));
 app.use('/articles', require('./routes/articles'));
 app.use('/categories', require('./routes/categories'));
-app.use('/admin', require('./routes/admin'));
+app.use('/admin', require('./routes/admin/index'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
