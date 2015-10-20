@@ -1,0 +1,54 @@
+{{> admin_nav}}
+<h1>{{title}}</h1>
+<table id="table" style="width: 800px;">
+    <caption>友链列表，第{{page}}页，共{{total}}页</caption>
+    <thead>
+        <tr>
+            <th>友链名</th>
+            <th>链接</th>
+            <th>创建时间</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+    {{#each links}}
+        <tr data-id="{{_id}}">
+            <td>{{name}}</td>
+            <td><a href="{{link}}" title="{{name}}" target="_blank">{{link}}</a></td>
+            <td> {{#timeFormatter create_at "yy-MM-dd HH:mm:ss"}}{{/timeFormatter}} </td>
+            <td>
+                <a href="/admin/links/{{_id}}" target="_blank" class="btn btn-info btn-sm">修改</a>
+                <button class="delete btn btn-danger btn-sm" type="button">删除</button>
+            </td>
+        </tr>
+    {{/each}}
+    </tbody>
+</table>
+
+{{#paging total page '/admin/links/posts/'}}{{/paging}}
+
+<script src="/javascripts/jquery.js"></script>
+<script>
+$(function() {
+    $('#table').on('click', '.delete', function(event) {
+        event.preventDefault();
+        var id = $(this).closest('tr').data('id');
+        if (confirm('是否删除该友链')) {
+            $.ajax({
+                url: '/admin/links/' + id,
+                type: 'DELETE',
+                dataType: 'json'
+            })
+            .done(function(data) {
+                if (!data.state) {
+                    return alert('删除失败');
+                }
+                alert('删除成功');
+            })
+            .fail(function() {
+                console.log("error");
+            });
+        }
+    });
+});
+</script>

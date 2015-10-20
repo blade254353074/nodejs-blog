@@ -3,17 +3,16 @@ var express = require('express'),
 
 var _ = require('lodash'); // 对象操作库
 
-var Article = require('../../models/article').Article,
-    Category = require('../../models/category').Category;
+var Links = require('../../models/links').Links;
 
-// 文章列表 Read
-router.get('/articles/posts/:page', function(req, res, next) {
+// 友链列表 Read
+router.get('/links/posts/:page', function(req, res, next) {
     // 确保page是整数
     var page = Math.abs(req.params.page) || 1;
     // 每页的行数
     var row_num = 15;
 
-    Article.count().exec(function(err, count) {
+    Links.count().exec(function(err, count) {
         if (err) {
             console.error(err);
             return res.status(500).render('error', err);
@@ -28,31 +27,20 @@ router.get('/articles/posts/:page', function(req, res, next) {
         } else {
             skipPage = (page - 1) * row_num;
         }
-        Article.find()
-            // .select({
-            //     title: 1,
-            //     update_date: 1
-            // })
+        Links.find()
             .skip(skipPage)
             .limit(row_num)
-            .populate({
-                path: 'category',
-                select: {
-                    name: 1,
-                    name_raw: 1
-                }
-            })
             .sort({
-                update_date: -1
+                create_at: -1
             })
-            .exec(function(err, articles) {
+            .exec(function(err, links) {
                 if (err) {
                     console.error(err);
                     return res.status(500).render('error', err);
                 }
-                res.render('./admin/article/list', {
-                    title: '文章列表',
-                    articles: articles,
+                res.render('./admin/links/list', {
+                    title: '友链列表',
+                    links: links,
                     total: total,
                     page: page
                 });
@@ -60,44 +48,35 @@ router.get('/articles/posts/:page', function(req, res, next) {
     });
 });
 
-// 添加文章界面
-router.get('/articles', function(req, res, next) {
-    Category.find()
-        .select({
-            name: 1
-        })
-        .sort({
-            weight: -1
-        })
-        .exec(function(err, categories) {
-            if (err) {
-                console.error(err);
-                return res.status(500).render('error', err);
-            }
-            res.render('./admin/article/add', {
-                title: '文章添加',
-                categories: categories,
-            });
-        });
+// 添加友链界面
+router.get('/links', function(req, res, next) {
+    res.render('./admin/links/add', {
+        title: '友链添加'
+    });
 });
 
-// 添加文章 Create
-router.post('/articles', function(req, res, next) {
-    var markdown = require("markdown").markdown;
-    var article = new Article(req.body);
-
-    article['create_date'] = article['update_date'] = new Date();
-    try {
-        article['content'] = markdown.toHTML(article.content_raw);
-    } catch (err) {
-        console.error(article + '\n' + err);
+// 添加友链 Create
+router.post('/links', function(req, res, next) {
+    var strRegex = "^((https|http|ftp|rtsp|mms)://)" + "(([0-9a-z_!~*'().&=+$%-]+: )?[0-9a-z_!~*'().&=+$%-]+@)?" //ftp的user@
+        + "(([0-9]{1,3}\.){3}[0-9]{1,3}" // IP形式的URL- 199.194.52.184
+        + "|" // 允许IP和DOMAIN（域名）
+        + "([0-9a-z_!~*'()-]+\.)*" // 域名- www.
+        + "([0-9a-z][0-9a-z-]{0,61})?[0-9a-z]\." // 二级域名
+        + "[a-z]{2,6})" // first level domain- .com or .museum
+        + "(:[0-9]{1,4})?" // 端口- :80
+        + "((/?)|" // a slash isn't required if there is no file name
+        + "(/[0-9a-z_!~*'().;?:@&=+$,%#-]+)+/?)$";
+    var re = new RegExp(strRegex);
+    // 判断link是否为正确url
+    if (!re.test(req.body.link)) {
         return res.json({
             state: false
         });
     }
-    // http://mongoosejs.com/docs/api.html#document_Document-update
-    // this save action will auto add __v key to document
-    article.save(function(err, article, numAffected) {
+    req.body.create_at = new Date();
+    var links = new Links(req.body);
+
+    links.save(function(err, links, numAffected) {
         if (err) {
             console.error(err);
             return res.json({
@@ -110,16 +89,16 @@ router.post('/articles', function(req, res, next) {
     });
 });
 
-// 获取文章内容 Read
-router.get('/articles/:id', function(req, res, next) {
-    Article.findById(req.params.id)
+// 获取友链内容 Read
+router.get('/links/:id', function(req, res, next) {
+    Links.findById(req.params.id)
         .populate({
             path: 'category',
             select: {
                 name: 1
             }
         })
-        .exec(function(err, article) {
+        .exec(function(err, links) {
             if (err) {
                 res.status(500).render('error', err);
                 return console.error(err.message);
@@ -128,17 +107,17 @@ router.get('/articles/:id', function(req, res, next) {
                 .select({
                     name: 1
                 })
-                .exec(function(err, categories) {
+                .exec(function(err, links) {
                     if (err) {
                         res.status(500).render('error', err);
                         return console.error(err.message);
                     }
-                    // 遍历article.category
+                    // 遍历links.category
                     // 修改每个分类至选中
                     var mergedCate = [];
-                    categories.forEach(function(category, index) {
+                    links.forEach(function(category, index) {
                         var isSame = false;
-                        _.forEach(article.category, function(selectedItem, index) {
+                        _.forEach(links.category, function(selectedItem, index) {
                             selectedItem.selected = true;
                             if (category._id.equals(selectedItem._id)) {
                                 isSame = true;
@@ -151,39 +130,39 @@ router.get('/articles/:id', function(req, res, next) {
                             isSame = false;
                         }
                     });
-                    article.category = mergedCate;
+                    links.category = mergedCate;
                     // 更新category成功
-                    res.render('./admin/article/edit', {
-                        title: '修改文章：「' + article.title + '」',
-                        article: article,
+                    res.render('./admin/links/edit', {
+                        title: '修改友链：「' + links.title + '」',
+                        links: links,
                         meta: {
-                            description: article.description,
-                            keywords: article.keywords
+                            description: links.description,
+                            keywords: links.keywords
                         }
                     });
                 });
         });
 });
 
-// 修改文章 Update
-router.put('/articles/:id', function(req, res, next) {
+// 修改友链 Update
+router.put('/links/:id', function(req, res, next) {
     var markdown = require("markdown").markdown;
-    var newArticle = req.body;
+    var newLinks = req.body;
 
-    newArticle.update_date = new Date();
+    newLinks.create_at = new Date();
     try {
-        newArticle['content'] = markdown.toHTML(newArticle.content_raw);
+        newLinks['content'] = markdown.toHTML(newLinks.content_raw);
     } catch (err) {
-        console.error(newArticle + '\n' + err);
+        console.error(newLinks + '\n' + err);
         return res.json({
             state: false
         });
     }
     // 更新数据修改成功
-    Article.findOneAndUpdate({
+    Links.findOneAndUpdate({
         _id: req.params.id
     }, {
-        $set: newArticle
+        $set: newLinks
     }, {
         upsert: true
     }, function(err, raw) {
@@ -200,10 +179,10 @@ router.put('/articles/:id', function(req, res, next) {
     });
 });
 
-// 删除文章 Delete
-router.delete('/articles/:id', function(req, res, next) {
+// 删除友链 Delete
+router.delete('/links/:id', function(req, res, next) {
     var id = req.params.id;
-    Article.remove({
+    Links.remove({
         _id: id
     }, function(err) {
         if (err) {
