@@ -3,17 +3,16 @@ var express = require('express'),
 
 var _ = require('lodash'); // 对象操作库
 
-var Article = require('../../models/article').Article,
-    Category = require('../../models/category').Category;
+var Category = require('../../models/category').Category;
 
-// 文章列表 Read
-router.get('/articles/posts/:page', function(req, res, next) {
+// 分类列表 Read
+router.get('/categories/posts/:page', function(req, res, next) {
     // 确保page是整数
     var page = Math.abs(req.params.page) || 1;
     // 每页的行数
     var row_num = 15;
 
-    Article.count().exec(function(err, count) {
+    Category.count().exec(function(err, count) {
         if (err) {
             console.error(err);
             return res.status(500).render('error', err);
@@ -28,31 +27,20 @@ router.get('/articles/posts/:page', function(req, res, next) {
         } else {
             skipPage = (page - 1) * row_num;
         }
-        Article.find()
-            // .select({
-            //     title: 1,
-            //     update_date: 1
-            // })
+        Category.find()
             .skip(skipPage)
             .limit(row_num)
-            .populate({
-                path: 'category',
-                select: {
-                    name: 1,
-                    name_raw: 1
-                }
-            })
             .sort({
-                update_date: -1
+                create_at: -1
             })
-            .exec(function(err, articles) {
+            .exec(function(err, categories) {
                 if (err) {
                     console.error(err);
                     return res.status(500).render('error', err);
                 }
-                res.render('./admin/article/list', {
-                    title: '文章列表',
-                    articles: articles,
+                res.render('./admin/category/list', {
+                    title: '分类列表',
+                    categories: categories,
                     total: total,
                     page: page
                 });
@@ -60,44 +48,43 @@ router.get('/articles/posts/:page', function(req, res, next) {
     });
 });
 
-// 添加文章界面
-router.get('/articles', function(req, res, next) {
-    Category.find()
-        .select({
-            name: 1
+// 添加分类界面
+router.get('/categories', function(req, res, next) {
+    res.render('./admin/category/add', {
+        title: '分类添加'
+    });
+});
+
+// 分类原始名查重
+router.get('/categories/:name_raw/check', function(req, res, next) {
+    var name_raw = req.params.name_raw.trim();
+    if (!name_raw) {
+        return res.status(500).json({
+            state: false
+        });
+    }
+    Category.findOne({
+            name_raw: name_raw
         })
-        .sort({
-            weight: -1
-        })
-        .exec(function(err, categories) {
+        .exec(function(err, category) {
             if (err) {
                 console.error(err);
-                return res.status(500).render('error', err);
+                return res.status(500).json({
+                    state: false
+                });
             }
-            res.render('./admin/article/add', {
-                title: '文章添加',
-                categories: categories,
+            res.json({
+                repeat: !!category
             });
         });
 });
 
-// 添加文章 Create
-router.post('/articles', function(req, res, next) {
-    var markdown = require("markdown").markdown;
-    var article = new Article(req.body);
-
-    article['create_date'] = article['update_date'] = new Date();
-    try {
-        article['content'] = markdown.toHTML(article.content_raw);
-    } catch (err) {
-        console.error(article + '\n' + err);
-        return res.json({
-            state: false
-        });
-    }
-    // http://mongoosejs.com/docs/api.html#document_Document-update
-    // this save action will auto add __v key to document
-    article.save(function(err, article, numAffected) {
+// 添加分类 Create
+router.post('/categories', function(req, res, next) {
+    req.body['create_at'] = new Date();
+    var category = new Category(req.body);
+    console.log(category);
+    category.save(function(err, category, numAffected) {
         if (err) {
             console.error(err);
             return res.json({
@@ -110,80 +97,41 @@ router.post('/articles', function(req, res, next) {
     });
 });
 
-// 获取文章内容 Read
-router.get('/articles/:id', function(req, res, next) {
-    Article.findById(req.params.id)
-        .populate({
-            path: 'category',
-            select: {
-                name: 1
-            }
-        })
-        .exec(function(err, article) {
+// 获取分类内容 Read
+router.get('/categories/:id', function(req, res, next) {
+    Category.findById(req.params.id)
+        .exec(function(err, category) {
             if (err) {
                 res.status(500).render('error', err);
                 return console.error(err.message);
             }
-            Category.find()
-                .select({
-                    name: 1
-                })
-                .exec(function(err, categories) {
-                    if (err) {
-                        res.status(500).render('error', err);
-                        return console.error(err.message);
-                    }
-                    // 遍历article.category
-                    // 修改每个分类至选中
-                    var mergedCate = [];
-                    categories.forEach(function(category, index) {
-                        var isSame = false;
-                        _.forEach(article.category, function(selectedItem, index) {
-                            selectedItem.selected = true;
-                            if (category._id.equals(selectedItem._id)) {
-                                isSame = true;
-                                return mergedCate.push(selectedItem);
-                            }
-                        });
-                        if (!isSame) {
-                            mergedCate.push(category);
-                        } else {
-                            isSame = false;
-                        }
-                    });
-                    article.category = mergedCate;
-                    // 更新category成功
-                    res.render('./admin/article/edit', {
-                        title: '修改文章：「' + article.title + '」',
-                        article: article,
-                        meta: {
-                            description: article.description,
-                            keywords: article.keywords
-                        }
-                    });
+            var weights = [];
+            for (var i = 1; i < 10; i++) {
+                var selected = false;
+                if (category.weight === i) {
+                    selected = true;
+                }
+                weights.push({
+                    weight: i,
+                    selected: selected
                 });
+            }
+            res.render('./admin/category/edit', {
+                title: '修改分类：「' + category.name + '」',
+                category: category,
+                weights: weights
+            });
         });
 });
 
-// 修改文章 Update
-router.put('/articles/:id', function(req, res, next) {
-    var markdown = require("markdown").markdown;
-    var newArticle = req.body;
+// 修改分类 Update
+router.put('/categories/:id', function(req, res, next) {
+    var newCategory = req.body;
 
-    newArticle.update_date = new Date();
-    try {
-        newArticle['content'] = markdown.toHTML(newArticle.content_raw);
-    } catch (err) {
-        console.error(newArticle + '\n' + err);
-        return res.json({
-            state: false
-        });
-    }
-    // 更新数据修改成功
-    Article.findOneAndUpdate({
+    Category.findOneAndUpdate({
         _id: req.params.id
     }, {
-        $set: newArticle
+        $set: newCategory
     }, {
         upsert: true
     }, function(err, raw) {
@@ -200,10 +148,10 @@ router.put('/articles/:id', function(req, res, next) {
     });
 });
 
-// 删除文章 Delete
-router.delete('/articles/:id', function(req, res, next) {
+// 删除分类 Delete
+router.delete('/categories/:id', function(req, res, next) {
     var id = req.params.id;
-    Article.remove({
+    Category.remove({
         _id: id
     }, function(err) {
         if (err) {
@@ -219,5 +167,4 @@ router.delete('/articles/:id', function(req, res, next) {
     });
 });
 
-// categories();
 module.exports = router;

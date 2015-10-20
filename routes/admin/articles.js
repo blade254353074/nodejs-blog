@@ -155,11 +155,7 @@ router.get('/articles/:id', function(req, res, next) {
                     // 更新category成功
                     res.render('./admin/article/edit', {
                         title: '修改文章：「' + article.title + '」',
-                        article: article,
-                        meta: {
-                            description: article.description,
-                            keywords: article.keywords
-                        }
+                        article: article
                     });
                 });
         });

@@ -60,6 +60,9 @@ $(function() {
         $uplaadElems.each(function(index, elem) {
             var $elem = $(elem),
                 value = $elem.val();
+            if (typeof value === 'string'){
+                value = value.trimRight();
+            }
             if (!value && !$elem.data('optional')) {
                 return dataBool = false;
             }

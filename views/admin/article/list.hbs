@@ -43,21 +43,22 @@ $(function() {
     $('#table').on('click', '.delete', function(event) {
         event.preventDefault();
         var id = $(this).closest('tr').data('id');
-        $.ajax({
-            url: '/admin/articles/' + id,
-            type: 'DELETE',
-            dataType: 'json'
-        })
-        .done(function(data) {
-            if (!data.state) {
-                return alert('删除失败');
-            }
-            alert('删除成功');
-        })
-        .fail(function() {
-            console.log("error");
-        });
-
+        if (confirm('是否删除该文章')) {
+            $.ajax({
+                url: '/admin/articles/' + id,
+                type: 'DELETE',
+                dataType: 'json'
+            })
+            .done(function(data) {
+                if (!data.state) {
+                    return alert('删除失败');
+                }
+                alert('删除成功');
+            })
+            .fail(function() {
+                console.log("error");
+            });
+        }
     });
 });
 </script>

@@ -143,12 +143,18 @@ a[target="_blank"] {
 }
 
 .content {
-    width: 790px;
+    max-width: 790px;
     &.markdown-body {
         padding: 30px;
         background-color: #fff;
         border: 1px solid #ddd;
         border-radius: 3px;
         word-wrap: break-word;
+    }
+}
+
+.nav {
+    ul, li {
+        display: inline-block;
     }
 }

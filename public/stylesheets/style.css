@@ -497,7 +497,7 @@ a[target="_blank"] {
 }
 
 .content {
-  width: 790px;
+  max-width: 790px;
 }
 .content.markdown-body {
   padding: 30px;
@@ -505,4 +505,8 @@ a[target="_blank"] {
   border: 1px solid #ddd;
   border-radius: 3px;
   word-wrap: break-word;
+}
+
+.nav ul, .nav li {
+  display: inline-block;
 }

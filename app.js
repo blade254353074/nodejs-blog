@@ -1,5 +1,6 @@
 var express = require('express'),
     path = require('path'),
+    compression = require('compression'),
     favicon = require('serve-favicon'),
     logger = require('morgan'),
     session = require('express-session'),
@@ -12,6 +13,11 @@ var hbs = require('./utils/helper');
 hbs.registerPartials(__dirname + '/views/partials');
 
 var app = express();
+
+// Gzip压缩
+app.use(compression());
+// 定义静态资源路径
+app.use(express.static(path.join(__dirname, 'public')));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -38,8 +44,6 @@ app.use(session({
 app.use(require('node-compass')({
     mode: 'expanded'
 }));
-
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(methodOverride(function(req, res) {
     if (req.body && typeof req.body === 'object' && '_method' in req.body) {

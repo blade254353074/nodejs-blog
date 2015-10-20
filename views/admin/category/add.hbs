@@ -1,0 +1,97 @@
+{{> admin_nav}}
+<h1>{{title}}</h1>
+<form id="form" action="/admin/categories" method="POST">
+    <div class="form-group">
+        <label for="form_name_raw">原始名：</label>
+        <input id="form_name_raw" class="form-control data-upload" name="name_raw" type="text" placeholder="大小写字母、数字、下划线">
+        <span id="tip" style="display: none;">原始名重复</span>
+    </div>
+    <div class="form-group">
+        <label for="form_name">分类显示名：</label>
+        <input id="form_name" class="form-control data-upload" name="name" type="text">
+    </div>
+    <div class="form-group">
+        <label for="form_weight">权重：</label>
+        <select id="form_weight" class="form-control data-upload" name="weight">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <input id="submit" type="submit" value="提交">
+    </div>
+</form>
+
+<script src="/javascripts/jquery.js"></script>
+<script>
+$(function() {
+    var $form = $('#form');
+    var $uplaadElems = $('.data-upload');
+
+    var $tip = $('#tip'),
+        name_raw = '';
+    $('#form_name_raw').on('focus', function() {
+        name_raw = this.value.trim();
+    });
+    $('#form_name_raw').on('blur', function() {
+        var value = this.value.trim();
+        if (!value || value === name_raw) {
+            return;
+        }
+        $.ajax({
+            url: '/admin/categories/' + value + '/check',
+            dataType: 'json'
+        })
+        .done(function(data) {
+            if (data.repeat) {
+                $tip.show();
+            } else if (data.repeat === false) {
+                $tip.hide();
+            }
+        });
+    });
+
+    $('#submit').on('click', function(event) {
+        event.preventDefault();
+        var dataObj = {},
+            dataBool = true;
+
+        $uplaadElems.each(function(index, elem) {
+            var $elem = $(elem),
+                value = $elem.val();
+            if (typeof value === 'string'){
+                value = value.trimRight();
+            }
+            if (!value && !$elem.data('optional')) {
+                return dataBool = false;
+            }
+            dataObj[$elem.attr('name')] = value;
+        });
+        if (!dataBool) {
+            return console.log('请填写完整');
+        }
+        console.log(dataObj);
+        $.ajax({
+            url: '/admin/categories',
+            type: 'POST',
+            dataType: 'json',
+            data: dataObj
+        })
+        .done(function(data) {
+            if (!data.state) {
+                return console.log('添加失败，表单填写或许有误');
+            }
+            alert('添加成功');
+            // window.location.reload();
+        });
+
+    });
+});
+</script>

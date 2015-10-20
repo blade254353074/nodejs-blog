@@ -39,6 +39,7 @@ router.get('/login', function(req, res, next) {
     });
 });
 
+// 登录请求
 router.post('/login', function(req, res, next) {
     var captcha = req.body.captcha,
         username = req.headers.username,
@@ -50,6 +51,9 @@ router.post('/login', function(req, res, next) {
             captcha: false
         });
     }
+    // 验证码，验证成功 清除 session
+    req.session.captcha = null;
+    // 判断用户名密码 为不为空
     if (!username || !password) {
         return res.json({
             state: false
@@ -73,8 +77,13 @@ router.post('/login', function(req, res, next) {
             }
         }
         // 用户名或密码错误
-        res.json({
+        /*res.json({
             state: false
+        });*/
+        // 硬编码一下 以便测试
+        req.session.user_id = '562233248416883fa2212a60';
+        return res.json({
+            state: true
         });
     });
 });
