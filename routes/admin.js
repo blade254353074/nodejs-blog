@@ -36,7 +36,6 @@ router.get('/captcha', function(req, res, next) {
 
 // 登录界面
 router.get('/login', function(req, res, next) {
-    console.log(req.headers.referer);
     res.render('./admin/login', {
         title: '登录'
     });
@@ -89,8 +88,8 @@ router.get('/logout', function(req, res, next) {
 });
 
 // 拦截所有/admin路径的请求
-router.get(/.*/, function(req, res, next) {
-    // console.log(req.headers);
+router.use(/.*/, function(req, res, next) {
+    console.log(req.headers);
     // todo
     if (!req.session.user_id) {
         if (req.headers['x-requested-with'] === 'XMLHttpRequest') {

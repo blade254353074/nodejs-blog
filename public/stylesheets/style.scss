@@ -1,4 +1,4 @@
-@import "compass/css3";
+@import "scss/markdown";
 
 body {
   padding: 50px;
@@ -140,4 +140,15 @@ a[target="_blank"] {
 .pagination-sm > li:last-child > span {
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
+}
+
+.content {
+    width: 790px;
+    &.markdown-body {
+        padding: 30px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        word-wrap: break-word;
+    }
 }

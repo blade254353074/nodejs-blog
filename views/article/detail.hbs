@@ -16,11 +16,11 @@
         <span>喜欢：{{like}}</span>
         <span>浏览：{{#if visit}} {{visit}} {{else}} 0 {{/if}}</span>
     </div>
-    <div class="content">{{{content}}}</div>
-    <div>
+    <div class="content markdown-body">{{{content}}}</div>
+    <p>
         <button data-id="{{_id}}" id="like">like</button>
         <button data-id="{{_id}}" id="dislike">dislike</button>
-    </div>
+    </p>
 {{else}}
     <p>哎呀，文章走失了呢</p>
 {{/with}}
