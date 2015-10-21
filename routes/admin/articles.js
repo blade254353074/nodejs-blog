@@ -6,6 +6,7 @@ var _ = require('lodash'); // 对象操作库
 var Article = require('../../models/article').Article,
     Category = require('../../models/category').Category;
 
+
 // 文章列表 Read
 router.get('/articles/posts/:page', function(req, res, next) {
     // 确保page是整数
@@ -29,10 +30,6 @@ router.get('/articles/posts/:page', function(req, res, next) {
             skipPage = (page - 1) * row_num;
         }
         Article.find()
-            // .select({
-            //     title: 1,
-            //     update_date: 1
-            // })
             .skip(skipPage)
             .limit(row_num)
             .populate({
@@ -74,10 +71,14 @@ router.get('/articles', function(req, res, next) {
                 console.error(err);
                 return res.status(500).render('error', err);
             }
-            res.render('./admin/article/add', {
-                title: '文章添加',
-                categories: categories,
-            });
+            if (categories) {
+                res.render('./admin/article/add', {
+                    title: '文章添加',
+                    categories: categories,
+                });
+            } else {
+                next();
+            }
         });
 });
 
@@ -133,25 +134,27 @@ router.get('/articles/:id', function(req, res, next) {
                         res.status(500).render('error', err);
                         return console.error(err.message);
                     }
-                    // 遍历article.category
-                    // 修改每个分类至选中
-                    var mergedCate = [];
-                    categories.forEach(function(category, index) {
-                        var isSame = false;
-                        _.forEach(article.category, function(selectedItem, index) {
-                            selectedItem.selected = true;
-                            if (category._id.equals(selectedItem._id)) {
-                                isSame = true;
-                                return mergedCate.push(selectedItem);
+                    if (categories) {
+                        // 遍历article.category
+                        // 修改每个分类至选中
+                        var mergedCate = [];
+                        categories.forEach(function(category, index) {
+                            var isSame = false;
+                            _.forEach(article.category, function(selectedItem, index) {
+                                selectedItem.selected = true;
+                                if (category._id.equals(selectedItem._id)) {
+                                    isSame = true;
+                                    return mergedCate.push(selectedItem);
+                                }
+                            });
+                            if (!isSame) {
+                                mergedCate.push(category);
+                            } else {
+                                isSame = false;
                             }
                         });
-                        if (!isSame) {
-                            mergedCate.push(category);
-                        } else {
-                            isSame = false;
-                        }
-                    });
-                    article.category = mergedCate;
+                        article.category = mergedCate;
+                    }
                     // 更新category成功
                     res.render('./admin/article/edit', {
                         title: '修改文章：「' + article.title + '」',
@@ -160,6 +163,7 @@ router.get('/articles/:id', function(req, res, next) {
                 });
         });
 });
+
 
 // 修改文章 Update
 router.put('/articles/:id', function(req, res, next) {

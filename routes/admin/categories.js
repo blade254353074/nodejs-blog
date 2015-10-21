@@ -74,6 +74,7 @@ router.get('/categories/:name_raw/check', function(req, res, next) {
                 });
             }
             res.json({
+                // category => null or true
                 repeat: !!category
             });
         });
@@ -116,11 +117,15 @@ router.get('/categories/:id', function(req, res, next) {
                     selected: selected
                 });
             }
-            res.render('./admin/category/edit', {
-                title: '修改分类：「' + category.name + '」',
-                category: category,
-                weights: weights
-            });
+            if (category) {
+                res.render('./admin/category/edit', {
+                    title: '修改分类：「' + category.name + '」',
+                    category: category,
+                    weights: weights
+                });
+            } else {
+                next();
+            }
         });
 });
 

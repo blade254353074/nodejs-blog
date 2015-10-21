@@ -92,68 +92,37 @@ router.post('/links', function(req, res, next) {
 // 获取友链内容 Read
 router.get('/links/:id', function(req, res, next) {
     Links.findById(req.params.id)
-        .populate({
-            path: 'category',
-            select: {
-                name: 1
-            }
-        })
         .exec(function(err, links) {
             if (err) {
                 res.status(500).render('error', err);
                 return console.error(err.message);
             }
-            Category.find()
-                .select({
-                    name: 1
-                })
-                .exec(function(err, links) {
-                    if (err) {
-                        res.status(500).render('error', err);
-                        return console.error(err.message);
-                    }
-                    // 遍历links.category
-                    // 修改每个分类至选中
-                    var mergedCate = [];
-                    links.forEach(function(category, index) {
-                        var isSame = false;
-                        _.forEach(links.category, function(selectedItem, index) {
-                            selectedItem.selected = true;
-                            if (category._id.equals(selectedItem._id)) {
-                                isSame = true;
-                                return mergedCate.push(selectedItem);
-                            }
-                        });
-                        if (!isSame) {
-                            mergedCate.push(category);
-                        } else {
-                            isSame = false;
-                        }
-                    });
-                    links.category = mergedCate;
-                    // 更新category成功
-                    res.render('./admin/links/edit', {
-                        title: '修改友链：「' + links.title + '」',
-                        links: links,
-                        meta: {
-                            description: links.description,
-                            keywords: links.keywords
-                        }
-                    });
+            if (links) {
+                res.render('./admin/links/edit', {
+                    title: '修改友链：' + '「' + links.name + '」',
+                    links: links
                 });
+            } else {
+                next();
+            }
         });
 });
 
 // 修改友链 Update
 router.put('/links/:id', function(req, res, next) {
-    var markdown = require("markdown").markdown;
     var newLinks = req.body;
-
-    newLinks.create_at = new Date();
-    try {
-        newLinks['content'] = markdown.toHTML(newLinks.content_raw);
-    } catch (err) {
-        console.error(newLinks + '\n' + err);
+    var strRegex = "^((https|http|ftp|rtsp|mms)://)" + "(([0-9a-z_!~*'().&=+$%-]+: )?[0-9a-z_!~*'().&=+$%-]+@)?" //ftp的user@
+        + "(([0-9]{1,3}\.){3}[0-9]{1,3}" // IP形式的URL- 199.194.52.184
+        + "|" // 允许IP和DOMAIN（域名）
+        + "([0-9a-z_!~*'()-]+\.)*" // 域名- www.
+        + "([0-9a-z][0-9a-z-]{0,61})?[0-9a-z]\." // 二级域名
+        + "[a-z]{2,6})" // first level domain- .com or .museum
+        + "(:[0-9]{1,4})?" // 端口- :80
+        + "((/?)|" // a slash isn't required if there is no file name
+        + "(/[0-9a-z_!~*'().;?:@&=+$,%#-]+)+/?)$";
+    var re = new RegExp(strRegex);
+    // 判断link是否为正确url
+    if (!re.test(newLinks.link)) {
         return res.json({
             state: false
         });

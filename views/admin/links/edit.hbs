@@ -1,0 +1,65 @@
+{{> admin_nav}}
+<h1>{{title}}</h1>
+<form id="form" action="/admin/links" method="POST">
+    {{#with links}}
+    <div class="form-group">
+        <label for="form_name">友链名：</label>
+        <input  value="{{name}}"
+                id="form_name" class="form-control data-upload" name="name" type="text">
+    </div>
+    <div class="form-group">
+        <label for="form_link">链接：</label>
+        <input  value="{{link}}"
+                id="form_link" class="form-control data-upload" name="link" type="text" placeholder="http://www.google.com/">
+    </div>
+    <div class="form-group">
+        <input type="hidden" name="_method" value="PUT">
+        <input data-id="{{_id}}" id="submit" type="submit" value="提交">
+    </div>
+    {{/with}}
+</form>
+
+<script src="/javascripts/jquery.js"></script>
+<script>
+$(function() {
+    var $form = $('#form');
+    var $uplaadElems = $('.data-upload');
+
+    $('#submit').on('click', function(event) {
+        event.preventDefault();
+        var dataObj = {},
+            dataBool = true;
+        var id = $(this).data('id');
+
+        $uplaadElems.each(function(index, elem) {
+            var $elem = $(elem),
+                value = $elem.val();
+            if (typeof value === 'string'){
+                value = value.trimRight();
+            }
+            if (!value && !$elem.data('optional')) {
+                return dataBool = false;
+            }
+            dataObj[$elem.attr('name')] = value;
+        });
+        if (!dataBool) {
+            return console.log('请填写完整');
+        }
+        console.log(dataObj);
+        $.ajax({
+            url: '/admin/links/' + id,
+            type: 'PUT',
+            dataType: 'json',
+            data: dataObj
+        })
+        .done(function(data) {
+            if (!data.state) {
+                return alert('更新失败，表单填写或许有误');
+            }
+            alert('更新成功');
+            // window.location.reload();
+        });
+
+    });
+});
+</script>
