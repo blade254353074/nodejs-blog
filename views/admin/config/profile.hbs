@@ -1,11 +1,11 @@
 {{> admin_nav}}
 <h1>{{title}}</h1>
 <form id="form" action="/admin/config/profile" method="POST">
-{{#with profile}}
+{{#with config}}
     <div class="form-group">
         <label for="form_author">名字：</label>
-        <input  value="{{author}}"
-                id="form_author" class="form-control data-upload" name="author" type="text">
+        <input  value="{{profile_author}}"
+                id="form_author" class="form-control data-upload" name="profile_author" type="text">
         <span id="tip" style="display: none;">原始名重复</span>
         <div class="help-block">
             © 2015 名字<br>
@@ -14,23 +14,23 @@
     </div>
     <div class="form-group">
         <label for="form_avatar">头像：</label>
-        <img src="{{avatar}}">
+        <img src="{{profile_avatar}}">
         {{!-- <input id="form_avatar" class="form-control data-upload" name="avatar" type="file"> --}}
     </div>
     <div class="form-group">
         <label for="form_email">邮箱：</label>
-        <input  value="{{email}}"
-                id="form_email" class="form-control data-upload" name="email" type="text">
+        <input  value="{{profile_email}}"
+                id="form_email" class="form-control data-upload" name="profile_email" type="text">
     </div>
     <div class="form-group">
         <label for="form_company">公司：</label>
-        <input  value="{{company}}"
-                id="form_company" class="form-control data-upload" name="company" type="text">
+        <input  value="{{profile_company}}"
+                id="form_company" class="form-control data-upload" name="profile_company" type="text">
     </div>
     <div class="form-group">
         <label for="form_location">地址：</label>
-        <input  value="{{location}}"
-                id="form_location" class="form-control data-upload" name="location" type="text">
+        <input  value="{{profile_location}}"
+                id="form_location" class="form-control data-upload" name="profile_location" type="text">
     </div>
     <div class="form-group">
         <input type="hidden" name="_method" value="PUT">

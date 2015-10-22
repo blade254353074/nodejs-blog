@@ -5,14 +5,15 @@ var Config = require('../../models/config').Config;
 
 // 个人资料 Read
 router.get('/profile', function(req, res, next) {
-    Config.findOne(function(err, config) {
-        if (err) return res.render('error', err);
-        if (!config) return next(new Error('not found'));
-        res.render('./admin/config/profile', {
-            title: '个人资料',
-            profile: config.profile
+    Config.findOne()
+        .exec(function(err, config) {
+            if (err) return res.render('error', err);
+            if (!config) return next(new Error('not found'));
+            res.render('./admin/config/profile', {
+                title: '个人资料',
+                config: config
+            });
         });
-    });
 });
 
 // 个人资料 Read
@@ -21,11 +22,7 @@ router.put('/profile', function(req, res, next) {
     // delete req.body._id;
 
     Config.findOneAndUpdate({}, {
-            $set: {
-                profile: req.body
-            }
-        }, {
-            upsert: true
+            $set: req.body
         })
         .exec(function(err, result) {
             console.log(result);

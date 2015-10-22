@@ -18,7 +18,7 @@ db.on('open', function(callback) {
     var Config = require('../models/config').Config;
     var meta_dynamic = '',
         meta_static = '';
-    Config.find()
+    Config.findOne()
         .exec(function(err, config) {
             if (err) {
                 _global.blog_title = '博客标题';
@@ -28,16 +28,14 @@ db.on('open', function(callback) {
                     '<meta name="keywords" content="关键词">';
                 return console.error(err.message);
             }
-            var blog = config[0].blog;
-            var profile = config[0].profile;
 
-            _global.blog_title = blog.title;
-            _global.list_count = blog.list_count;
+            _global.blog_title = config.blog_title;
+            _global.list_count = config.blog_list_count;
 
-            meta_static += '<meta name="author" content="' + profile.author + '">' +
-                '<meta name="email" content="' + profile.email + '">';
-            meta_dynamic += '<meta name="description" content="' + blog.description + '">' +
-                '<meta name="keywords" content="' + blog.keywords + '">';
+            meta_static += '<meta name="author" content="' + config.profile_author + '">' +
+                '<meta name="email" content="' + config.profile_email + '">';
+            meta_dynamic += '<meta name="description" content="' + config.blog_description + '">' +
+                '<meta name="keywords" content="' + config.blog_keywords + '">';
 
         });
 
