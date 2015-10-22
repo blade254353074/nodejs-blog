@@ -16,7 +16,7 @@ router.get('/profile', function(req, res, next) {
         });
 });
 
-// 个人资料 Read
+// 个人资料 Update
 router.put('/profile', function(req, res, next) {
     // var id = req.body._id;
     // delete req.body._id;
@@ -37,12 +37,30 @@ router.put('/profile', function(req, res, next) {
 
 // 博客配置 Read
 router.get('/blog', function(req, res, next) {
-    Config.findOne(function(err, config) {
-        console.log(config);
-        res.render('./admin/config/blog', {
-            title: '博客配置'
+    Config.findOne()
+        .exec(function(err, config) {
+            if (err) return res.render('error', err);
+            if (!config) return next(new Error('not found'));
+            res.render('./admin/config/blog', {
+                title: '博客配置',
+                config: config
+            });
         });
-    });
+});
+
+// 博客配置 Update
+router.put('/blog', function(req, res, next) {
+    Config.findOneAndUpdate({}, {
+            $set: req.body
+        })
+        .exec(function(err, result) {
+            if (err) return res.json({
+                state: false
+            });
+            res.json({
+                state: true
+            });
+        });
 });
 
 module.exports = router;

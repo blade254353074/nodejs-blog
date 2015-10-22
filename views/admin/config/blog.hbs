@@ -1,3 +1,79 @@
 {{> admin_nav}}
-
 <h1>{{title}}</h1>
+<form id="form" action="/admin/config/blog" method="POST">
+{{#with config}}
+    <div class="form-group">
+        <label for="form_author">博客标题：</label>
+        <input  value="{{blog_title}}"
+                id="form_title" class="form-control data-upload" name="blog_title" type="text">
+    </div>
+    <div class="form-group">
+        <label for="form_email">描述：</label>
+        <input  value="{{blog_description}}"
+                id="form_description" class="form-control data-upload" name="blog_description" type="text">
+    </div>
+    <div class="form-group">
+        <label for="form_keywords">关键词：</label>
+        <input  value="{{blog_keywords}}"
+                id="form_keywords" class="form-control data-upload" name="blog_keywords" type="text">
+    </div>
+    <div class="form-group">
+        <label for="form_avatar">Copyright：</label>
+        <input  value="{{blog_copyright}}"
+                id="form_copyright" class="form-control data-upload" name="blog_copyright" type="text">
+    </div>
+    <div class="form-group">
+        <label for="form_list_count">分页行数：</label>
+        <input  value="{{blog_list_count}}"
+                id="form_list_count" class="form-control data-upload" name="blog_list_count" type="text">
+    </div>
+    <div class="form-group">
+        <input type="hidden" name="_method" value="PUT">
+        <input data-id="{{_id}}" id="submit" type="submit" value="提交">
+    </div>
+{{/with}}
+</form>
+
+<script src="/javascripts/jquery.js"></script>
+<script>
+$(function() {
+    var $form = $('#form');
+    var $uplaadElems = $('.data-upload');
+
+    $('#submit').on('click', function(event) {
+        event.preventDefault();
+        var dataObj = {},
+            dataBool = true;
+
+        $uplaadElems.each(function(index, elem) {
+            var $elem = $(elem),
+                value = $elem.val();
+            if (typeof value === 'string'){
+                value = value.trimRight();
+            }
+            if (!value && !$elem.data('optional')) {
+                return dataBool = false;
+            }
+            dataObj[$elem.attr('name')] = value;
+        });
+        if (!dataBool) {
+            return console.log('请填写完整');
+        }
+        console.log(dataObj);
+        $.ajax({
+            url: '/admin/config/blog',
+            type: 'PUT',
+            dataType: 'json',
+            data: dataObj
+        })
+        .done(function(data) {
+            if (!data.state) {
+                return console.log('更新失败，表单填写或许有误');
+            }
+            alert('更新成功');
+            // window.location.reload();
+        });
+
+    });
+});
+</script>
