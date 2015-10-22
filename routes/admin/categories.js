@@ -1,12 +1,10 @@
 var express = require('express'),
     router = express.Router();
 
-var _ = require('lodash'); // 对象操作库
-
 var Category = require('../../models/category').Category;
 
 // 分类列表 Read
-router.get('/categories/posts/:page', function(req, res, next) {
+router.get('/posts/:page', function(req, res, next) {
     // 确保page是整数
     var page = Math.abs(req.params.page) || 1;
     // 每页的行数
@@ -49,14 +47,14 @@ router.get('/categories/posts/:page', function(req, res, next) {
 });
 
 // 添加分类界面
-router.get('/categories', function(req, res, next) {
+router.get('', function(req, res, next) {
     res.render('./admin/category/add', {
         title: '分类添加'
     });
 });
 
 // 分类原始名查重
-router.get('/categories/:name_raw/check', function(req, res, next) {
+router.get('/:name_raw/check', function(req, res, next) {
     var name_raw = req.params.name_raw.trim();
     if (!name_raw) {
         return res.status(500).json({
@@ -81,7 +79,7 @@ router.get('/categories/:name_raw/check', function(req, res, next) {
 });
 
 // 添加分类 Create
-router.post('/categories', function(req, res, next) {
+router.post('/', function(req, res, next) {
     req.body['create_at'] = new Date();
     var category = new Category(req.body);
     console.log(category);
@@ -99,7 +97,7 @@ router.post('/categories', function(req, res, next) {
 });
 
 // 获取分类内容 Read
-router.get('/categories/:id', function(req, res, next) {
+router.get('/:id', function(req, res, next) {
     Category.findById(req.params.id)
         .exec(function(err, category) {
             if (err) {
@@ -130,7 +128,7 @@ router.get('/categories/:id', function(req, res, next) {
 });
 
 // 修改分类 Update
-router.put('/categories/:id', function(req, res, next) {
+router.put('/:id', function(req, res, next) {
     var newCategory = req.body;
 
     Category.findOneAndUpdate({
@@ -154,7 +152,7 @@ router.put('/categories/:id', function(req, res, next) {
 });
 
 // 删除分类 Delete
-router.delete('/categories/:id', function(req, res, next) {
+router.delete('/:id', function(req, res, next) {
     var id = req.params.id;
     Category.remove({
         _id: id

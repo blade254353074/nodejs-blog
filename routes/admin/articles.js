@@ -8,7 +8,7 @@ var Article = require('../../models/article').Article,
 
 
 // 文章列表 Read
-router.get('/articles/posts/:page', function(req, res, next) {
+router.get('/posts/:page', function(req, res, next) {
     // 确保page是整数
     var page = Math.abs(req.params.page) || 1;
     // 每页的行数
@@ -58,7 +58,7 @@ router.get('/articles/posts/:page', function(req, res, next) {
 });
 
 // 添加文章界面
-router.get('/articles', function(req, res, next) {
+router.get('/', function(req, res, next) {
     Category.find()
         .select({
             name: 1
@@ -83,7 +83,7 @@ router.get('/articles', function(req, res, next) {
 });
 
 // 添加文章 Create
-router.post('/articles', function(req, res, next) {
+router.post('/', function(req, res, next) {
     var markdown = require("markdown").markdown;
     var article = new Article(req.body);
 
@@ -112,7 +112,7 @@ router.post('/articles', function(req, res, next) {
 });
 
 // 获取文章内容 Read
-router.get('/articles/:id', function(req, res, next) {
+router.get('/:id', function(req, res, next) {
     Article.findById(req.params.id)
         .populate({
             path: 'category',
@@ -166,7 +166,7 @@ router.get('/articles/:id', function(req, res, next) {
 
 
 // 修改文章 Update
-router.put('/articles/:id', function(req, res, next) {
+router.put('/:id', function(req, res, next) {
     var markdown = require("markdown").markdown;
     var newArticle = req.body;
 
@@ -201,7 +201,7 @@ router.put('/articles/:id', function(req, res, next) {
 });
 
 // 删除文章 Delete
-router.delete('/articles/:id', function(req, res, next) {
+router.delete('/:id', function(req, res, next) {
     var id = req.params.id;
     Article.remove({
         _id: id

@@ -1,12 +1,10 @@
 var express = require('express'),
     router = express.Router();
 
-var _ = require('lodash'); // 对象操作库
-
 var Links = require('../../models/links').Links;
 
 // 友链列表 Read
-router.get('/links/posts/:page', function(req, res, next) {
+router.get('/posts/:page', function(req, res, next) {
     // 确保page是整数
     var page = Math.abs(req.params.page) || 1;
     // 每页的行数
@@ -49,14 +47,14 @@ router.get('/links/posts/:page', function(req, res, next) {
 });
 
 // 添加友链界面
-router.get('/links', function(req, res, next) {
+router.get('/', function(req, res, next) {
     res.render('./admin/links/add', {
         title: '友链添加'
     });
 });
 
 // 添加友链 Create
-router.post('/links', function(req, res, next) {
+router.post('/', function(req, res, next) {
     var strRegex = "^((https|http|ftp|rtsp|mms)://)" + "(([0-9a-z_!~*'().&=+$%-]+: )?[0-9a-z_!~*'().&=+$%-]+@)?" //ftp的user@
         + "(([0-9]{1,3}\.){3}[0-9]{1,3}" // IP形式的URL- 199.194.52.184
         + "|" // 允许IP和DOMAIN（域名）
@@ -90,7 +88,7 @@ router.post('/links', function(req, res, next) {
 });
 
 // 获取友链内容 Read
-router.get('/links/:id', function(req, res, next) {
+router.get('/:id', function(req, res, next) {
     Links.findById(req.params.id)
         .exec(function(err, links) {
             if (err) {
@@ -109,7 +107,7 @@ router.get('/links/:id', function(req, res, next) {
 });
 
 // 修改友链 Update
-router.put('/links/:id', function(req, res, next) {
+router.put('/:id', function(req, res, next) {
     var newLinks = req.body;
     var strRegex = "^((https|http|ftp|rtsp|mms)://)" + "(([0-9a-z_!~*'().&=+$%-]+: )?[0-9a-z_!~*'().&=+$%-]+@)?" //ftp的user@
         + "(([0-9]{1,3}\.){3}[0-9]{1,3}" // IP形式的URL- 199.194.52.184
@@ -149,7 +147,7 @@ router.put('/links/:id', function(req, res, next) {
 });
 
 // 删除友链 Delete
-router.delete('/links/:id', function(req, res, next) {
+router.delete('/:id', function(req, res, next) {
     var id = req.params.id;
     Links.remove({
         _id: id

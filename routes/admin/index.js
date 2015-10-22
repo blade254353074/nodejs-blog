@@ -34,6 +34,11 @@ router.get('/captcha', function(req, res, next) {
 
 // 登录界面
 router.get('/login', function(req, res, next) {
+    if (req.session.user_id) {
+        res.render('./admin/index', {
+            title: '后台管理'
+        });
+    }
     res.render('./admin/login', {
         title: '登录'
     });
@@ -113,12 +118,13 @@ router.use(/.*/, function(req, res, next) {
 // 管理界面
 router.get('/', function(req, res, next) {
     res.render('./admin/index', {
-        title: '后台管理系统'
+        title: '后台管理'
     });
 });
 
-router.use('/', require('./articles'));
-router.use('/', require('./categories'));
-router.use('/', require('./links'));
+router.use('/articles', require('./articles'));
+router.use('/categories', require('./categories'));
+router.use('/links', require('./links'));
+router.use('/config', require('./config'));
 
 module.exports = router;
