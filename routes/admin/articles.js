@@ -84,12 +84,12 @@ router.get('/', function(req, res, next) {
 
 // 添加文章 Create
 router.post('/', function(req, res, next) {
-    var markdown = require("markdown").markdown;
+    var markdown = require('markdown-it')();
     var article = new Article(req.body);
 
     article['create_date'] = article['update_date'] = new Date();
     try {
-        article['content'] = markdown.toHTML(article.content_raw);
+        article['content'] = markdown.render(newArticle.content_raw);
     } catch (err) {
         console.error(article + '\n' + err);
         return res.json({
@@ -167,12 +167,12 @@ router.get('/:id', function(req, res, next) {
 
 // 修改文章 Update
 router.put('/:id', function(req, res, next) {
-    var markdown = require("markdown").markdown;
+    var markdown = require('markdown-it')();
     var newArticle = req.body;
 
     newArticle.update_date = new Date();
     try {
-        newArticle['content'] = markdown.toHTML(newArticle.content_raw);
+        newArticle['content'] = markdown.render(newArticle.content_raw);
     } catch (err) {
         console.error(newArticle + '\n' + err);
         return res.json({

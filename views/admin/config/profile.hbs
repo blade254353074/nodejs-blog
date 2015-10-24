@@ -10,7 +10,7 @@
     <div class="form-group">
         <label for="form_avatar">头像：</label>
         <img id="avatarImg" src="{{profile_avatar}}" style="max-width: 100px;">
-        <input id="form_avatar" class="data-upload" name="avatar" type="hidden" value="{{profile_avatar}}">
+        <input id="form_avatar" class="data-upload" name="profile_avatar" type="hidden" value="{{profile_avatar}}">
         <input id="avatarUpload" class="form-control" name="images" type="file">
     </div>
     <div class="form-group">
@@ -95,8 +95,8 @@ $(function() {
             type: 'POST',
             dataType: 'json',
             data: formData,
-            contentType: false, // 必须false才会自动加上正确的Content-Type
-            processData: false, // 必须false才会避开jQuery对 formdata 的默认处理, XMLHttpRequest会对 formdata 进行正确的处理
+            contentType: false, // false才会自动加上正确的Content-Type
+            processData: false, // false才会避开jQuery对 formdata 的默认处理, XMLHttpRequest会对 formdata 进行正确的处理
             xhr: function() {
                 var xhr = $.ajaxSettings.xhr();
                 xhr.upload.addEventListener('progress', function(event) {
@@ -118,13 +118,6 @@ $(function() {
         .fail(function() {
             console.log("error");
         });
-
-        /*ajax.on('progress', function(event) {
-            var loaded = event.loaded,
-                total = event.total,
-                percentage = Math.floor(bytesReceived / bytesExpected * 100) / 100;
-            console.log(percentage);
-        });*/
     });
 });
 </script>
