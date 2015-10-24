@@ -9,7 +9,7 @@
     </div>
     <div class="form-group">
         <label for="form_avatar">头像：</label>
-        <img src="{{profile_avatar}}">
+        <img id="avatarImg" src="{{profile_avatar}}" style="max-width: 100px;">
         <input id="form_avatar" class="data-upload" name="avatar" type="hidden" value="{{profile_avatar}}">
         <input id="avatarUpload" class="form-control" name="images" type="file">
     </div>
@@ -78,7 +78,13 @@ $(function() {
     });
 
     $('#avatarUpload').on('change', function() {
-        var formData = new FormData();
+        var formData;
+        // 判断文件控件是否有文件
+        if (!this.files.length) {
+            return;
+        }
+        // 实例化FormData
+        formData = new FormData();
         for (var i = 0, len = this.files.length; i < len; i++) {
             formData.append('upload', this.files[i]);
         }
@@ -90,23 +96,24 @@ $(function() {
             dataType: 'json',
             data: formData,
             contentType: false, // 必须false才会自动加上正确的Content-Type
-            /**
-            * 必须false才会避开jQuery对 formdata 的默认处理
-            * XMLHttpRequest会对 formdata 进行正确的处理
-            */
-            processData: false,
+            processData: false, // 必须false才会避开jQuery对 formdata 的默认处理, XMLHttpRequest会对 formdata 进行正确的处理
             xhr: function() {
                 var xhr = $.ajaxSettings.xhr();
                 xhr.upload.addEventListener('progress', function(event) {
                     var total = event.total,
                         loaded = event.loaded;
+                    // 百分比进度
                     console.log(Math.floor(loaded / total * 100) / 100);
                 }, false);
                 return xhr;
             }
         })
         .done(function(data) {
-            console.log(data);
+            if (!data.state) {
+                alert('文件上传失败，请上传5MB以内的图片文件(jpg, jpeg, gif, png)');
+            }
+            $('#avatarImg').attr('src', data.url);
+            $('#form_avatar').val(data.url);
         })
         .fail(function() {
             console.log("error");

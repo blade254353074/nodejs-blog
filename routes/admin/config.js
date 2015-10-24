@@ -1,9 +1,11 @@
 var express = require('express'),
     router = express.Router();
 
+// 文件上传，及图片处理工具
 var multiparty = require('multiparty'),
     path = require('path'),
     imageinfo = require('imageinfo'),
+    gm = require('gm'),
     fs = require('fs');
 
 var Config = require('../../models/config').Config;
@@ -83,7 +85,12 @@ router.post('/avatar', function(req, res, next) {
                 });
             });
         }*/
-
+        if (!files.upload) {
+            // 没有文件
+            return res.json({
+                state: false
+            });
+        }
         /* 单文件上传*/
         var image = files.upload[0];
         var fileName = image.originalFilename,
@@ -95,11 +102,11 @@ router.post('/avatar', function(req, res, next) {
             info = imageinfo(result);
 
         // 判断文件大小和类型
-        if (fileSize > 5000000 || !info || info.type === 'image') {
+        if (fileSize > 5000000 || !info || info.type !== 'image') {
             // 大于5MB或者 不是image类型
             // 删除临时文件
             fs.unlink(filePath, function(err) {
-                if (err) throw err;
+                if (err) console.error(err);
             });
             return res.json({
                 state: false
@@ -109,25 +116,65 @@ router.post('/avatar', function(req, res, next) {
         console.log("Data is type:", info.mimeType);
         console.log("Dimensions:", info.width, "x", info.height);
         // 新文件名由 时间戳_文件名前12位.jpg 组成
-        var newName = new Date().getTime() + '_' + fileName.substring(0, fileName.lastIndexOf('.')).slice(0, 12) + fileName.substring(fileName.lastIndexOf('.')),
-            newPath = './public/uploads/' + newName;
+        var newName = new Date().getTime() + '_' + fileName.substring(0, fileName.lastIndexOf('.')).slice(0, 12) + fileName.substring(fileName.lastIndexOf('.'));
+        // 绝对和相对路径
+        var absolutePath = '/uploads/' + newName,
+            relativePath = './public/uploads/' + newName;
         // 文件重命名
-        fs.rename(filePath, newPath, function(err) {
+        /*fs.rename(filePath, relativePath, function(err) {
             if (err) {
                 // 重命名出错，删除临时文件
                 console.error('rename error: ' + err);
                 fs.unlink(filePath, function(err) {
-                    if (err) throw err;
+                    if (err) console.error(err);
                 });
                 return res.json({
                     state: false
                 });
             }
-            res.json({
-                state: true,
-                url: newPath
+        });*/
+        var length = 200;
+        var xLength, yLength;
+        if (info.width <= info.height) {
+            // 竖长
+            xLength = length;
+        } else {
+            // 横长
+            yLength = length;
+        }
+        gm(filePath)
+            .resize(xLength, yLength)
+            .stream(function(err, buffer, stderr) {
+                var point = {
+                    x: 0,
+                    y: 0
+                };
+                if (xLength) {
+                    // 竖长
+                    point.y = length / info.width * info.height / 2 - length / 2;
+                }
+                if (yLength) {
+                    // 横长
+                    point.x = length / info.height * info.width / 2 - length / 2;
+                }
+                gm(buffer)
+                    .crop(200, 200, point.x, point.y)
+                    .write(relativePath, function(err) {
+                        if (err) {
+                            console.error(err);
+                            fs.unlink(filePath, function(err) {
+                                if (err) console.error(err);
+                            });
+                            return res.json({
+                                state: false
+                            });
+                        }
+                        res.json({
+                            state: true,
+                            url: absolutePath
+                        });
+                    });
             });
-        });
     });
 });
 
