@@ -3,6 +3,7 @@ var express = require('express'),
 
 var multiparty = require('multiparty'),
     path = require('path'),
+    imageinfo = require('imageinfo'),
     fs = require('fs');
 
 var Config = require('../../models/config').Config;
@@ -43,6 +44,7 @@ router.put('/profile', function(req, res, next) {
 router.post('/avatar', function(req, res, next) {
     // 需要multiparty组件
     var form = new multiparty.Form({
+        maxFilesSize: 5 * 1000 * 1000,
         uploadDir: './public/uploads/'
     });
 
@@ -55,7 +57,12 @@ router.post('/avatar', function(req, res, next) {
     });
 
     form.parse(req, function(err, fields, files) {
-        if (err) return res.render('error', err);
+        if (err) {
+            console.error(err);
+            return res.json({
+                state: false
+            });
+        }
         /* 多文件上传， 未完成*/
         /*var length = files.upload.length;
         for (var i = 0, len = files.upload.length; i < len; i++) {
@@ -78,20 +85,40 @@ router.post('/avatar', function(req, res, next) {
         }*/
 
         /* 单文件上传*/
-        var fileName = files.upload[0].originalFilename,
-            filePath = files.upload[0].path,
-            fileSize = files.upload[0].size;
-        if (fileSize > 5 * 1000 * 1000) {
-            // 大于5MB
+        var image = files.upload[0];
+        var fileName = image.originalFilename,
+            filePath = image.path, // 临时文件路径
+            fileSize = image.size;
+
+        // 获取上传文件的buffer, 利用imageinfo模块读取buffer中的mimeType
+        var result = fs.readFileSync(filePath),
+            info = imageinfo(result);
+
+        // 判断文件大小和类型
+        if (fileSize > 5000000 || !info || info.type === 'image') {
+            // 大于5MB或者 不是image类型
+            // 删除临时文件
+            fs.unlink(filePath, function(err) {
+                if (err) throw err;
+            });
             return res.json({
                 state: false
             });
         }
+        console.log(info);
+        console.log("Data is type:", info.mimeType);
+        console.log("Dimensions:", info.width, "x", info.height);
+        // 新文件名由 时间戳_文件名前12位.jpg 组成
         var newName = new Date().getTime() + '_' + fileName.substring(0, fileName.lastIndexOf('.')).slice(0, 12) + fileName.substring(fileName.lastIndexOf('.')),
             newPath = './public/uploads/' + newName;
+        // 文件重命名
         fs.rename(filePath, newPath, function(err) {
             if (err) {
+                // 重命名出错，删除临时文件
                 console.error('rename error: ' + err);
+                fs.unlink(filePath, function(err) {
+                    if (err) throw err;
+                });
                 return res.json({
                     state: false
                 });
