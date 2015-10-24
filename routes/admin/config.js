@@ -32,7 +32,6 @@ router.put('/profile', function(req, res, next) {
             $set: req.body
         })
         .exec(function(err, result) {
-            console.log(result);
             if (err) return res.json({
                 state: false
             });
@@ -192,11 +191,25 @@ router.get('/blog', function(req, res, next) {
 router.put('/blog', function(req, res, next) {
     Config.findOneAndUpdate({}, {
             $set: req.body
+        }, {
+            runValidators: true
         })
         .exec(function(err, result) {
-            if (err) return res.json({
-                state: false
-            });
+            if (err) {
+                var message = {};
+                for (var key in err.errors) {
+                    console.log(err.errors[key].message);
+                    message[key] = {
+                        message: err.errors[key].message,
+                        path: err.errors[key].path
+                    };
+                }
+                console.error(err);
+                return res.json({
+                    state: false,
+                    message: message
+                });
+            }
             res.json({
                 state: true
             });

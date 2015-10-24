@@ -1,8 +1,21 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var mongoose = require('mongoose'),
+    Schema = mongoose.Schema,
+    validate = require('mongoose-validator');
+
+var nameValidator = [
+    validate({
+        validator: 'isLength',
+        arguments: [3, 20],
+        message: '博客标题应为{ARGS[0]}~{ARGS[1]}个字符'
+    })
+];
 
 var configSchema = new Schema({
-    blog_title: String,
+    blog_title: {
+        type: String,
+        required: true,
+        validate: nameValidator
+    },
     blog_description: String,
     blog_keywords: String,
     blog_list_count: Number,
