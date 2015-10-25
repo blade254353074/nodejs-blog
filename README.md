@@ -9,13 +9,14 @@
 # Feature
 
 * Express (MVC framework -> <a href="http://www.expressjs.com.cn/4x/api.html" title="Express API" target="_blank">Express API</a>)
-* MongoDB (NoSQL -> <a href="https://docs.mongodb.org/manual/" title="MongoDB API">MongoDB API</a>)
-* RESTful API (API Standard -> <a href="http://www.ruanyifeng.com/blog/2014/05/restful_api.html" title="RESTful API设计指南">RESTful API设计指南</a>)
-* Handlebars (Server HTML Template)
+* MongoDB (NoSQL -> <a href="https://docs.mongodb.org/manual/" title="MongoDB API" target="_blank">MongoDB API</a>)
+* RESTful API (API Standard -> <a href="http://www.ruanyifeng.com/blog/2014/05/restful_api.html" title="RESTful API设计指南" target="_blank">RESTful API设计指南</a>)
+* Handlebars (Server HTML Template -> <a href="http://handlebarsjs.com/" title="Handlebarsjs.com" target="_blank">Handlebarsjs.com</a>)
 * Mongoose (ORM -> <a href="http://mongoosejs.com/docs/api.html" title="Mongoose API" target="_blank">Mongoose API</a>)
-* Mongoose Validator (ORM Validator -> <a href="https://www.npmjs.com/package/mongoose-validator" title="mongoose-validator" target="_blank">npm mongoose-validator</a>)
-* ccap captcha
-* gm picture resize and crop
+* mongoose-validator (ORM Validator -> <a href="https://github.com/leepowellcouk/mongoose-validator" title="Mongoose Validator" target="_blank">Mongoose Validator</a>)
+* <a href="http://mongoosejs.com/docs/validation.html" title="Mongoose Validation API" target="_blank">Mongoose Validation API</a>
+* <a href="https://github.com/DoubleSpout/ccap" title="ccap captcha" target="_blank">ccap captcha</a>
+* <a href="http://aheckmann.github.io/gm/docs.html" title="gm v1.9.0" target="_blank">gm v1.9.0</a>
 
 # TODO
 
@@ -24,3 +25,11 @@
 * 前端用gulp构建，将compass转换为gulp-sass
 * 界面设计
 * 相似/热门的文章
+* ...
+
+# Helping Article
+
+* <a href="http://segmentfault.com/a/1190000002812451#articleHeader8" title="http://segmentfault.com/a/1190000002812451" target="_blank">express4.0学习</a>
+* <a href="http://segmentfault.com/a/1190000002630691" title="Session原理、安全以及最基本的Express和Redis实现" target="_blank">Session原理、安全以及最基本的Express和Redis实现</a>
+* <a href="http://www.ghostchina.com/handlebars-wen-dang-bi-ji/" title="Handlebars 文档笔记" target="_blank">Handlebars 文档笔记</a>
+* <a href="http://segmentfault.com/a/1190000000342636" title="Handlebars中文文档（译自官方版）" target="_blank">Handlebars中文文档（译自官方版）</a>
