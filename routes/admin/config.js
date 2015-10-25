@@ -192,6 +192,7 @@ router.put('/blog', function(req, res, next) {
     Config.findOneAndUpdate({}, {
             $set: req.body
         }, {
+            // update 需要添加 option runValidators 才能进入mongoose校验
             runValidators: true
         })
         .exec(function(err, result) {
