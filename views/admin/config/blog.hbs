@@ -68,7 +68,11 @@ $(function() {
         })
         .done(function(data) {
             if (!data.state) {
-                return console.log('更新失败，表单填写或许有误');
+                var message = '';
+                for (var key in data.message) {
+                    message = data.message[key].message + '\n';
+                }
+                return alert('更新失败\n' + message);
             }
             alert('更新成功');
             // window.location.reload();

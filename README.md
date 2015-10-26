@@ -17,6 +17,7 @@
 * <a href="http://mongoosejs.com/docs/validation.html" title="Mongoose Validation API" target="_blank">Mongoose Validation API</a>
 * <a href="https://github.com/DoubleSpout/ccap" title="ccap captcha" target="_blank">ccap captcha</a>
 * <a href="http://aheckmann.github.io/gm/docs.html" title="gm v1.9.0" target="_blank">gm v1.9.0</a>
+* markdown-it (Markdown to HTML parser -> <a href="https://github.com/markdown-it/markdown-it" title="markdown-it">markdown-it</a>)
 
 # TODO
 
@@ -33,3 +34,4 @@
 * <a href="http://segmentfault.com/a/1190000002630691" title="Session原理、安全以及最基本的Express和Redis实现" target="_blank">Session原理、安全以及最基本的Express和Redis实现</a>
 * <a href="http://www.ghostchina.com/handlebars-wen-dang-bi-ji/" title="Handlebars 文档笔记" target="_blank">Handlebars 文档笔记</a>
 * <a href="http://segmentfault.com/a/1190000000342636" title="Handlebars中文文档（译自官方版）" target="_blank">Handlebars中文文档（译自官方版）</a>
+* <a href="http://segmentfault.com/a/1190000002727265" title="Mongoose Population使用" target="_blank">Mongoose Population使用</a>
