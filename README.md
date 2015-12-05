@@ -22,6 +22,7 @@
 # TODO
 
 * 项目构建转换为 -> [node-express-mongoose-demo](https://github.com/madhums/node-express-mongoose-demo/)
+* Add [connect-flash](https://github.com/jaredhanson/connect-flash)
 * 搞清楚app.locals, global使用方法
 * 前端用gulp构建，将compass转换为gulp-sass
 * 界面设计
