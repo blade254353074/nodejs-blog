@@ -1,18 +1,19 @@
 <h1><a href="/categories">文章分类</a> - {{title}}</h1>
 {{> header}}
 <ul>
-    {{#each articles}}
+  {{#each articles}}
     <li>
-        <a href="/articles/{{_id}}" class="title">{{title}}</a>
-        <div class="meta">
-            <time title="{{#timeFormatter update_date}}{{/timeFormatter}}">
-                最后更新：{{#dateDiff update_date}}{{/dateDiff}}
-            </time>
-        </div>
+      <a href="/articles/{{_id}}" class="title">{{title}}</a>
+      <div class="meta">
+        <time title="{{#timeFormatter update_date}}{{/timeFormatter}}">
+          最后更新：
+          {{#dateDiff update_date}}{{/dateDiff}}
+        </time>
+      </div>
     </li>
     {{else}}
-    恕我无能，没有写『{{title}}』分类下的文章。。。
-    {{/each}}
+      恕我无能，没有写『{{title}}』分类下的文章。。。
+  {{/each}}
 </ul>
 {{#paging total page '/articles/posts/'}}{{/paging}}
 {{> footer}}
